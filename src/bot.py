@@ -8,6 +8,7 @@ def run():
     intents = discord.Intents.default()
     intents.message_content = True
     intents.reactions = True
+    intents.members = True
 
     client = discord.Client(intents=intents)
 
@@ -17,7 +18,6 @@ def run():
 
     @client.event
     async def on_raw_reaction_add(payload):
-
         # Check if reacion is the correct emoji
         if str(payload.emoji) != "🔁":
             return
@@ -28,17 +28,21 @@ def run():
 
         # Getting the "retweets" channel
         retweet_channel = discord.utils.get(guild.text_channels, name="retweets")
-
         # Creating a "retweets" channel if one does not exist
         if not retweet_channel:
             retweet_channel = await guild.create_text_channel("retweets")
 
-        # Send message content
-        await retweet_channel.send('"' + message.content + '"\n' + "- " + message.author.display_name)
+        # Checking if this reaction is the first one
+        reaction = discord.utils.get(message.reactions, emoji=payload.emoji.name)
+        if reaction.count > 1:
+            return
 
-        # Send embed with author's display avatar
+        author = guild.get_member(message.author.id)
+        # Send embed with message content and author's display avatar
         emb = discord.Embed()
-        emb.set_image(url=message.author.display_avatar.url)
+        emb.set_author(name=author.nick, url=None, icon_url=author.display_avatar.url)
+        emb.add_field(name="\u200b", value='"' + message.content + '"', inline=False)
+        emb.add_field(name="\u200b", value="- " + str(author), inline=False)
         await retweet_channel.send(embed=emb)
 
     client.run(os.getenv("token"))
