@@ -38,7 +38,7 @@ def run():
             return
 
         author = guild.get_member(message.author.id)
-        # Send embed with message content and author's display avatar
+        # Send embed with author and message content
         emb = discord.Embed()
         emb.set_author(name=author.nick, url=None, icon_url=author.display_avatar.url)
         emb.add_field(name="\u200b", value='"' + message.content + '"', inline=False)
