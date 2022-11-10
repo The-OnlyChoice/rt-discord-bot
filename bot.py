@@ -22,8 +22,7 @@ def run():
         if str(payload.emoji) != "🔁":
             return
 
-        message_channel = client.get_channel(payload.channel_id)
-        message = await message_channel.fetch_message(payload.message_id)
+        message = await client.get_channel(payload.channel_id).fetch_message(payload.message_id)
         guild = message.guild
 
         # Getting the "retweets" channel
